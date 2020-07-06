@@ -9,9 +9,8 @@
 ## this function return a object with three function 
 ## 1. set: set value of matrix
 ## 2. get: get value of matrix
-## 3. getInverse: get inverse of matrix
-## and one internal function calcInverse to calculate inverse of matrix and cache its value
-
+## 3. setInverse: set inverse of matrix
+## 4. getInverse: get inverse of matrix
 makeCacheMatrix <- function(x = matrix()) {
   
   M <- x
@@ -23,25 +22,32 @@ makeCacheMatrix <- function(x = matrix()) {
   }
   get <- function() M
   
-  calcInverse <- function() {
-    if (is.null(cacheInverse)) cacheInverse <<- solve(M)
+  setInverse <- function(inverse) {
+    cacheInverse <<- inverse
   }
-  getInverse <- function() 
-    {
-      calcInverse()
-      cacheInverse
-    }
+  getInverse <- function() cacheInverse
   
-  list(set = set, get = get, getInverse = getInverse)
+  list(set = set, get = get, setInverse = setInverse, getInverse = getInverse)
   
 }
 
 
 ## Write a short comment describing this function
 ## this function will request inverse matrix from special object create from first function
-## any calculation have been move to inside objecct
+## it will check for any cached inverse if there exist it will return cached value 
+## else it will calculate new inverse and store it
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
-  x$getInverse()
+  inverse <- x$getInverse()
+  if(!is.null(inverse)){
+    message("load cached data")
+    return(inverse)
+  }
+  
+  mat <- x$get()
+  
+  inverse <- solve(mat, ...)
+  x$setInverse(inverse)
+  inverse
 }
